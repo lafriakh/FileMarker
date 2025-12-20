@@ -1,0 +1,61 @@
+<!-- Plugin Configuration File: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN, cannot be changed between the plugin versions. -->
+    <id>com.rachid.Marker</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
+    <name>Marker</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor url="https://rchid.io">Rachid Lafriakh</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
+    <description><![CDATA[
+        <b>Mark files for easy access.</b>
+        <br><br>
+        Marker is a productivity tool that allows you to create a temporary working set of files and navigate between them quickly, without cluttering your tab bar or using heavy bookmarking tools.
+        <br><br>
+        <b>Features:</b>
+        <ul>
+            <li><b>Quick Mark:</b> Press <code>Ctrl+Alt+A</code> to mark the current file.</li>
+            <li><b>Quick Unmark:</b> Press <code>Ctrl+Alt+D</code> to remove the mark.</li>
+            <li><b>Fast Navigation:</b> Press <code>Ctrl+Shift+O</code> to open a searchable popup list of your marked files.</li>
+            <li><b>Native Look:</b> The list uses the native IDE appearance (icons and grayed-out paths) for better readability.</li>
+            <li><b>Persistence:</b> Your marked files are saved per project, so they are ready when you restart the IDE.</li>
+        </ul>
+    ]]></description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <resource-bundle>messages.MyMessageBundle</resource-bundle>
+    <!-- Extensions defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+    </extensions>
+
+    <actions>
+        <action id="com.rachid.marker.MarkFile"
+                class="com.rachid.marker.MarkFileAction"
+                text="Mark File"
+                description="Marks the current file">
+            <!-- Note: "ctrl" is Control on Mac too. Use "meta" if you want Command. -->
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt A"/>
+        </action>
+
+        <action id="com.rachid.marker.UnmarkFile"
+                class="com.rachid.marker.UnmarkFileAction"
+                text="Unmark File"
+                description="Unmarks the current file">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt D"/>
+        </action>
+
+        <action id="com.rachid.marker.ShowList"
+                class="com.rachid.marker.ShowMarkedFilesAction"
+                text="Show Marked Files"
+                description="Shows list of marked files">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift O"/>
+        </action>
+    </actions>
+</idea-plugin>
