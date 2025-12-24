@@ -19,32 +19,38 @@ class MarkedFilesService(private val project: Project) : PersistentStateComponen
         var markedFileUrls: MutableList<String> = mutableListOf()
     )
 
-    private var myState = State()
+    private var store = State()
 
     override fun getState(): State {
-        return myState
+        return store
     }
 
     override fun loadState(state: State) {
-        myState = state
+        store = state
+    }
+
+    private fun fireFilesChanged() {
+        project.messageBus.syncPublisher(MarkedFilesListener.TOPIC).markedFilesChanged()
     }
 
     fun markFile(file: VirtualFile) {
         val url = file.url
-        if (!myState.markedFileUrls.contains(url)) {
-            myState.markedFileUrls.add(url)
+        if (!store.markedFileUrls.contains(url)) {
+            store.markedFileUrls.add(url)
         }
     }
 
     fun unmarkFile(file: VirtualFile) {
-        myState.markedFileUrls.remove(file.url)
+        if (store.markedFileUrls.remove(file.url)) {
+            fireFilesChanged()
+        }
     }
 
     fun getFiles(): List<VirtualFile> {
         val fileManager = VirtualFileManager.getInstance()
         val result = mutableListOf<VirtualFile>()
 
-        val iterator = myState.markedFileUrls.iterator()
+        val iterator = store.markedFileUrls.iterator()
         while (iterator.hasNext()) {
             val url = iterator.next()
             val file = fileManager.findFileByUrl(url)
@@ -60,6 +66,6 @@ class MarkedFilesService(private val project: Project) : PersistentStateComponen
     }
 
     fun isMarked(file: VirtualFile): Boolean {
-        return myState.markedFileUrls.contains(file.url)
+        return store.markedFileUrls.contains(file.url)
     }
 }

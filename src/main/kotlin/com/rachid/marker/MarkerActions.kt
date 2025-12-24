@@ -3,8 +3,10 @@ package com.rachid.marker
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.application.ApplicationManager.getApplication
 import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.SimpleTextAttributes
@@ -12,6 +14,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import javax.swing.JList
 
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.ui.popup.JBPopup
 import java.awt.Dimension
 import com.intellij.util.IconUtil
 
@@ -38,8 +41,14 @@ class UnmarkFileAction : AnAction() {
 // Action: Show the list (Cmd + Shift + O)
 class ShowMarkedFilesAction : AnAction() {
 
+    private var popup: JBPopup? = null
+
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
+        showPopup(project)
+    }
+
+    private fun showPopup(project: Project) {
         val service = project.service<MarkedFilesService>()
         val virtualFiles = service.getFiles()
 
@@ -76,7 +85,7 @@ class ShowMarkedFilesAction : AnAction() {
         }
 
         // 2. Build the Popup using Safe VirtualFiles
-        val popup = JBPopupFactory.getInstance()
+        this.popup = JBPopupFactory.getInstance()
             .createPopupChooserBuilder(virtualFiles)
             .setTitle("Marked Files")
             .setRenderer(renderer)
@@ -89,6 +98,23 @@ class ShowMarkedFilesAction : AnAction() {
             }
             .createPopup()
 
-        popup.showCenteredInCurrentWindow(project)
+        this.popup?.let { popup ->
+            popup.showCenteredInCurrentWindow(project)
+            filesChangedListener(project, popup)
+        }
+    }
+
+
+    private fun filesChangedListener(project: Project, popup: JBPopup) {
+        val connection = project.messageBus.connect(popup)
+        connection.subscribe(MarkedFilesListener.TOPIC, object : MarkedFilesListener {
+            override fun markedFilesChanged() {
+                getApplication().invokeLater {
+                    if (!popup.isDisposed) {
+                        showPopup(project)
+                    }
+                }
+            }
+        })
     }
 }

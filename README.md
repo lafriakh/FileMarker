@@ -13,6 +13,12 @@ Your marks are **persistent per project** (saved even after restart) and the pop
 *   **Searchable:** Type immediately after opening the list to filter files by name.
 *   **Persistent State:** Marks are saved inside the project's `.idea` folder, so they are ready when you return to the project.
 
+## How to build
+* Run `./gradlew buildPlugin`.
+* You will find a `.zip` file in `./build/distributions/` directory.
+
+> \* *Note: You can install the plugin in `Settings -> Plugins`. Click on the gear icon and choose `Install Plugin from Disk`*
+
 ## Standard Usage
 
 | Action | Windows / Linux | macOS |
@@ -42,3 +48,4 @@ nmap <leader>u <Action>(com.rachid.marker.UnmarkFile)
 
 " Example: Leader + l to Show List
 nmap <leader>l <Action>(com.rachid.marker.ShowList)
+```
